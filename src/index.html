@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>k n o c k o u t 3 3</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div id="app">
+    <div id="drop-target" @drop="onDrop" @dragover="onDragOver">
+      <svg data-url="po33.svg" class="po" width="200px"></svg>
+    </div>
+
+    <a @click="play">p l a y</a>
+
+    <ol>
+      <li v-for="sound in sounds" :key="sound.id">
+        {{sound.name}}
+      </li>
+    </ol> 
+  </div>
+  
+  <script src="vue.js"></script>
+  <script src="svg.js"></script>
+  <script src="knockout.js"></script>
+</body>
+</html>
