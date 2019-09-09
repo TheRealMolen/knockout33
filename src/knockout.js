@@ -2,16 +2,36 @@ console.log('hi mum');
 
 const ctx = new (window.AudioContext || window.webkitAudioContext);
 
+const formatTimeLength = function(l) {
+    return (+l).toLocaleString(undefined, {maximumFractionDigits:2});
+};
+Vue.filter('time', formatTimeLength);
+
 const app = new Vue({
     el: "#app",
 
     data: {
         nextId: 100,
+        maxLength: 16,
+        gap: 0.1,
         sounds: [],
     },
 
+    computed: {
+        totalLength() {
+            var length = 0;
+            this.sounds.forEach( (sound,ix) => {
+                if( ix != 0 ) {
+                    length += this.gap;
+                }
+                length += sound.duration;
+            });
+            return length;
+        },
+    },
+
     methods: {
-        play() {
+        playAll() {
             var offset = 0;
             this.sounds.forEach( sound => {
                 
@@ -19,9 +39,16 @@ const app = new Vue({
                 source.buffer = sound.buf;
                 source.connect( ctx.destination );
     
-                source.start(offset);
-                offset += sound.buf.duration + 0.1;
+                source.start(ctx.currentTime + offset);
+                offset += sound.duration + this.gap;
             });
+        },
+
+        playOne(sound) {
+            const source = ctx.createBufferSource();
+            source.buffer = sound.buf;
+            source.connect( ctx.destination );
+            source.start();
         },
 
         onDrop(e) {
@@ -41,7 +68,12 @@ const app = new Vue({
                 reader.onload = loaded => {
                     ctx.decodeAudioData( loaded.target.result )
                         .then( sound => {
-                            this.sounds.push( { name:file.name, buf: sound, id: this.nextId } );
+                            this.sounds.push( { 
+                                name:file.name,
+                                buf: sound, 
+                                duration: sound.duration,
+                                id: this.nextId
+                            });
                             this.nextId += 1;
                         })
                         .catch( err => {

@@ -12,13 +12,18 @@
       <svg data-url="po33.svg" class="po" width="200px"></svg>
     </div>
 
-    <a @click="play">p l a y</a>
+    <a @click="playAll">p l a y</a>
+
+    <div class="duration" :class="{'over-time': totalLength > maxLength}">
+      {{maxLength - totalLength | time}}s left
+    </div>
 
     <ol>
       <li v-for="sound in sounds" :key="sound.id">
-        {{sound.name}}
+        <span @click="playOne(sound)">🎵</span>
+        {{sound.name}} <span class="duration">[{{sound.duration | time}}s]</span>
       </li>
-    </ol> 
+    </ol>
   </div>
   
   <script src="vue.js"></script>
